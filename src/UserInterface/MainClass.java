@@ -3,7 +3,7 @@ package UserInterface;
 import NumericalMethod.RungeKutta4;
 import Reactions.PrimaryReaction;
 import Reactions.SecondaryReaction;
-import Reactor.IsothermalPFr;
+import Reactor.PFR;
 import fileio.CSVFile;
 
 import java.awt.*;
@@ -51,7 +51,7 @@ public class MainClass {
         // Initialize reactors
         PrimaryReaction primaryReaction = new PrimaryReaction(PrimaryReaction.k1_0);
         SecondaryReaction secondaryReaction = new SecondaryReaction(SecondaryReaction.k2_0);
-        IsothermalPFr PFR = new IsothermalPFr(primaryReaction, secondaryReaction);
+        PFR PFR = new PFR(primaryReaction, secondaryReaction);
 
         // Define initial state (8 elements)
         double[] initialState = {

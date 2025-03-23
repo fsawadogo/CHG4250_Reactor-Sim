@@ -55,29 +55,4 @@ public class SecondaryReaction extends Reaction {
 
 }
 
-/*
-public double[] calculateHeatCapacity(double T) {
-        double[] Cp = new double[4];
-        Cp[0] = Reaction.CP298[0]; //EDC heat capacity in function of temperature
-        Cp[1] = Reaction.A[0] + Reaction.B[0] * T + Reaction.C[0] * Math.pow(T, 2) + Reaction.D[0] * Math.pow(T, 3) + Reaction.E[0] * (1 / Math.pow(T, 2.));//NH3 heat capacity in function of temperature
-        Cp[2] = Reaction.CP298[1];//VC heat capacity in function of temperature
-        Cp[3] = Reaction.A[5] + Reaction.B[5] * T + Reaction.C[5] * Math.pow(T, 2) + Reaction.D[5] * Math.pow(T, 3) + Reaction.E[5] * (1 / Math.pow(T, 2.));//NH4Cl heat capacity in function of temperature
-        return Cp;
 
-    }
-
-    public double calculateReactionEnthalpy(double T) {
-        double H0_RX = Reaction.Ho_f[4] + Reaction.Ho_f[5] - Reaction.Ho_f[0] - Reaction.Ho_f[1];
-        double Cp_prod = Reaction.CP298[4] * (T - Reaction.TR) + 1. / 2 * (Reaction.A[5] * (T - Reaction.TR))
-                + 1. / 2 * (Reaction.B[5] * (Math.pow(T - Reaction.TR, 2))) + 1. / 3 * (Reaction.C[5] * Math.pow(T - Reaction.TR, 3))
-                + 1. / 4 * (Reaction.D[5] * Math.pow(T - Reaction.TR, 4)) + (Reaction.E[5] * 1 / (T - Reaction.TR));
-        double Cp_rea = Reaction.CP298[0] * (T - Reaction.TR) + 1. / 2 * (Reaction.A[1] * (T - Reaction.TR))
-                + 1. / 2 * (Reaction.B[1] * (Math.pow(T - Reaction.TR, 2))) + 1. / 3 * (Reaction.C[1] * Math.pow(T - Reaction.TR, 3))
-                + 1. / 4 * (Reaction.D[1] * Math.pow(T - Reaction.TR, 4)) + (Reaction.E[1] * 1 / (T - Reaction.TR));
-        double delta_CP = Cp_prod - Cp_rea;
-        double HRX;
-        HRX = H0_RX + delta_CP;
-        return HRX;
-    }
-
- */

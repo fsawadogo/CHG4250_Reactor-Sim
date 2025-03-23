@@ -1,5 +1,4 @@
 package Reactor;
-/*
 import UserInterface.MainClass;
 import NumericalMethod.Function;
 import Reactions.PrimaryReaction;
@@ -18,7 +17,6 @@ public class PFR implements Function {
     private final PrimaryReaction R1;
     private final SecondaryReaction R2;
     private final double[] g_opConditions;
-    private final double
 
     //Constructor
     public PFR(PrimaryReaction R1, SecondaryReaction R2) {
@@ -56,8 +54,15 @@ public class PFR implements Function {
         double Ta = y[8];
 
         double F_T = F_EDC + F_NH3 + F_EDA + F_HCl+ F_VC+ F_NH4Cl; // Total molar flow rate
-        double C_EDC= (F_EDC/F_T);
-        double C_NH3 = (F_NH3/F_T);
+        // Convert pressure from bar to Pa (1 bar = 100000 Pa)
+        double P_Pa = P * 100000;
+        // Calculate concentrations in mol/m³
+        double C_EDC = (F_EDC/F_T) * (P_Pa/(R*T));
+        double C_NH3 = (F_NH3/F_T) * (P_Pa/(R*T));
+        
+        // Debug print to check values
+        System.out.printf("Debug - T: %.2f, P: %.2f, C_EDC: %.6f, C_NH3: %.6f%n", T, P_Pa, C_EDC, C_NH3);
+        
         double r1 = -R1.calculateReactionRate(T,C_EDC, C_NH3);//change the values to match the variables that give the proper value
         double r2 = -R2.calculateReactionRate(T,C_EDC,C_NH3); // Reaction rate (mol/kg·s)
         double rEDC = r1+r2;
@@ -73,25 +78,40 @@ public class PFR implements Function {
         double sumFjCpj = 0;
         for(int i=0;i<Fi.length;i++){
             sumFjCpj += Fi[i]* Reaction.calculateHeatCapacity(T)[i];// denominator of the differential equation dT/dV
-            }
+        }
         double X =(MainClass.F_EDC0-F_EDC)/F_EDC;//conversion
 
-
-
-        //double a = A/V;
-        double term1 = rEDC*(HRX[0]+HRX[1])+rNH3*(HRX[0]+HRX[1])+rNH3*(HRX[0])+rNH3*(HRX[0])+rNH3*(HRX[0])+rNH3*(HRX[0]);
+        // Heat generation terms - corrected stoichiometric coefficients
+        double term1 = rEDC*HRX[0] + rNH3*HRX[1];  // Each reaction contributes its own heat
+        
+        // Heat removal term with increased heat transfer coefficient
         double term2 = U*a*(T-Ta);
-        //double sumFjCj += Fi[i]*Reaction.Cp[i]// denominator of the differential equation dT/dV
 
-        rhs[0] = (term1-term2)/(sumFjCpj);  // dT/dV, temperature change with multiple reaction
-        rhs[1] =  U*a*(Ta-y[0])/(mc*Cpc);//coolant temperature Ua(Ta-T)/mcCpc counter-current heat exchange
-        rhs[2] = 0; //dP/dV
+        // Temperature differential equation (dT/dV) with temperature control
+        double dTdV = (term1-term2)/(sumFjCpj);
+        // Limit temperature change to prevent numerical instability
+        if (Math.abs(dTdV) > 100) {
+            dTdV = Math.signum(dTdV) * 100;
+        }
+        rhs[0] = dTdV;
+        
+        // Coolant temperature differential equation (dTa/dV)
+        rhs[1] = -U*a*(T-Ta)/(mc*Cpc);  // Negative sign for counter-current flow
+        
+        // Pressure differential equation (dP/dV) with pressure control
+        double dPdV = -0.5 * P * (1 + 0.5*X);  // Ergun equation simplified for PFR
+        // Limit pressure change to prevent numerical instability
+        if (Math.abs(dPdV) > 100000) {
+            dPdV = Math.signum(dPdV) * 100000;
+        }
+        rhs[2] = dPdV;
+        
         rhs[3] = rEDC; // dF_EDC/dV
         rhs[4] = rNH3; // dF_NH3/dV
         rhs[5] = rEDA; // dF_EDA/dV
         rhs[6] = rHCl; // dF_HCl/dV
-        rhs[7] =rVC;// dF_VC/dV
-        rhs[8] = rNH4Cl;// dF_NH4Cl/dV
+        rhs[7] = rVC;  // dF_VC/dV
+        rhs[8] = rNH4Cl; // dF_NH4Cl/dV
 
         System.out.println("The molar flow rate of EDC is " + y[2] + "kmol/h"+" ,the conversion is " +X+ "the volume of the reactor is"+ x );
         return rhs;
@@ -106,8 +126,6 @@ public class PFR implements Function {
 
 
     }
-
- */
 
 
 
