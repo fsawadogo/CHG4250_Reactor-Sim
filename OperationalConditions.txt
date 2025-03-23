@@ -1,0 +1,8 @@
+Initial Temperature = 403
+Initial Pressure = 10
+Annual Production Rate of EDA = 42000
+
+
+
+
+
