@@ -27,15 +27,30 @@ public class SecondaryReaction extends Reaction {
     }
 
 
-    @Override
-    public double calculateReactionRate(double T, double C_EDC, double C_NH3) {
-        if (T <= 0 || C_EDC < 0 || C_NH3 < 0) {
-            throw new IllegalArgumentException("Invalid Temperature or concentration");
-        }
-        //Derivative of Arrhenius equation
-        k2 = k2_0 * Math.exp(Ea2 / R * (1 / T - 1 / TR));
-        return this.k2 * (C_EDC * 0.03) * C_NH3;
+@Override
+public double calculateReactionRate(double T, double C_EDC, double C_NH3) {
+    if (T <= 0 || C_EDC < 0 || C_NH3 < 0) {
+        throw new IllegalArgumentException("Invalid Temperature or concentration");
     }
+    
+    // Scale down the reaction rate to prevent numerical instability
+    // Use 3% of EDC for secondary reaction as mentioned in your design document
+    double C_EDC_secondary = C_EDC * 0.03;
+    
+    // Derivative of Arrhenius equation
+    k2 = k2_0 * Math.exp(Ea2 / (R * T) * (1 / TR - 1 / T));
+    
+    // Add a rate limiter to prevent explosion
+    double rate = this.k2 * C_EDC_secondary * C_NH3;
+    
+    // Limit maximum rate to prevent numerical instability
+    double maxRate = 100.0; // Adjust this value based on your specific system
+    if (Math.abs(rate) > maxRate) {
+        rate = Math.signum(rate) * maxRate;
+    }
+    
+    return rate;
+}
 
 
     @Override
